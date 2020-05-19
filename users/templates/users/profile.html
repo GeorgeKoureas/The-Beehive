@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load tz %}
+
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+{% block content %}
+<div class='col-md-8 mx-auto mt-0 pt-0'>
+<!---------USER PROFILE CARD ------------------------------------------------>
+<!---------USER PROFILE CARD ------------------------------------------------>
+<!---------USER PROFILE CARD ------------------------------------------------>
+<!---------USER PROFILE CARD ------------------------------------------------>
+<div class="content-section mt-0">
+  <div class="media">
+    <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+    <div class="media-body">
+      <h4 class="account-heading">{{ user.username }}</h4>
+      <p class="text-secondary">{{ user.email }}</p>
+      <ul class="nav nav-pills py-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-current-challenge-tab" data-toggle="pill" href="#pills-current-challenge" role="tab" aria-controls="current-challenge" aria-selected="true">Current challenge</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-past-challenges-tab" data-toggle="pill" href="#pills-past-challenges" role="tab" aria-controls="pills-past-challenges" aria-selected="false">Past challenges</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+<!-- <div class='col-md-2 prof_dash_side'>
+  <div class="content-section mt-0">
+    <div class="media">
+    </div>
+  </div>
+</div> -->
+<div class='col-md-8 mx-auto mt-auto'>
+<!---------END OF USER PROFILE CARD ------------------------------------------------>
+<!---------END OF USER PROFILE CARD ------------------------------------------------>
+<!---------END OF USER PROFILE CARD ------------------------------------------------>
+<!---------END OF USER PROFILE CARD ------------------------------------------------>
+
+<!----------------USER CHALLENGER--------------------------------------------------->
+<!----------------USER CHALLENGER--------------------------------------------------->
+<!----------------USER CHALLENGER--------------------------------------------------->
+<!----------------USER CHALLENGER--------------------------------------------------->
+
+<!----------------CURRENT CHALLENGE ------------------------------------------------>
+<!----------------CURRENT CHALLENGE ------------------------------------------------>
+<!----------------CURRENT CHALLENGE ------------------------------------------------>
+<!----------------CURRENT CHALLENGE ------------------------------------------------>
+
+{% if not user.profile.challenge_owner_account %}
+{% now "Y-m-d" as todays_date %}
+<div class="tab-content pb-5" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-current-challenge" role="tabpanel" aria-labelledby="pills-current-challenge-tab">
+      {% if active_challenge %}
+      <div class="media content-section">
+        <div class="media-body">
+          <h4> You are currently enrolled in: </h4>
+          {% for challenge in active_challenge %}
+            <hr>
+              <div class='row'>
+                <div class='col-2 m-auto'>
+                <img class="rounded account-img past" src="{{ challenge.cover_image.url }}">
+                </div>
+                <div class='col-10'>
+                  <h5>{{ challenge.name }}</h5>
+                  <p>{{ challenge.description_small_final }}</p>
+                  <a class="btn btn-sm btn-outline-info ml-auto" href="{% url 'challenges:challenge-details' challenge.pk %}">Details</a>
+                  <a class="btn btn-sm btn-outline-info ml-auto" data-toggle="collapse" href="#NextSteps" role="button" aria-expanded="false" aria-controls="NextSteps">Next Steps</a>
+                </div>
+              </div>
+            <hr>
+              <div class="collapse" id="NextSteps">
+                <div class='row'>
+                  <div class='col-2 m-auto'>
+                    {% if challenge.apply_until_date|date:"Y-m-d" < todays_date or active_team %}
+                      <i class="fas fa-check fa-3x" style="color:#5cb85c;"></i>
+                    {% else %}
+                    <i class="fas fa-minus fa-3x dis" style="color:#545454;"></i>
+                    {% endif %}
+                  </div>
+                  <div class='col-10'>
+                    <h5> Phase 1: Submit your application</h5>
+                    <div class="media-body">
+                        <p>You can change your individual application until:</p><p><i class="fa fa-calendar"></i>  <b>{{ challenge.apply_until_date }}</b></p>
+                        <br>
+                        {% if challenge.apply_until_date|date:"Y-m-d" > todays_date and not active_team %}
+                          {% for pitch in pitch_list %}
+                                {% if pitch.challenge.name == challenge.name %}
+                                  <a class="btn btn-sm btn-outline-info ml-auto" href="{% url 'challenges:pitch-update' pitch.id %}">Update</a>
+                                  <a class="btn btn-sm btn-danger ml-auto" href="{% url 'challenges:pitch-delete' pitch.id %}">Delete</a>
+                                {% endif %}
+                          {% endfor %}
+                        {% else %}
+                        <p>You cannot change your individual application anymore</p>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+              <hr>
+              {% for team in teams_list %}
+              {% if team.challenge.name == challenge.name %}
+              <div class='row'>
+                <div class='col-2 m-auto'>
+                  {% if challenge.due_date|date:"Y-m-d" < todays_date %}
+                    <i class="fas fa-check fa-3x" style="color:#5cb85c;"></i>
+                  {% else %}
+                  <i class="fas fa-minus fa-3x dis" style="color:#545454;"></i>
+                  {% endif %}
+                </div>
+              <div class='col-10'>
+                <h5> Phase 2: Co-Operate and submit your final team effort</h5>
+                  <div class="media-body">
+                    <p>You can change your team application until:</p><p><i class="fa fa-calendar"></i><b>{{ challenge.due_date }} </b></p> 
+                        <h5 class='text-muted'> Your Team</h5>
+                        <table id="dt-Challenge-{{ challenge.id }}" class="table table-hover table-sm" cellspacing="0" width="100%">
+                          <thead>
+                            <tr>
+                              <th class="th-sm">Members</th>
+                              <th class="th-sm">Emails</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for member in team.members.all %}
+                              <tr>
+                                <td>{{ member.user.username }}</td>
+                                <td>{{ member.user.email }}</td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>    
+                        </table>
+                        <br>
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'challenges:team-pitch' team.id %}" role="button">Submit</a>
+                        {% for pitch in pitch_list %}
+                              {% if pitch.challenge.name == challenge.name %}
+                                <a class="btn btn-sm btn-outline-danger" href="{% url 'challenges:pitch-delete' pitch.id %}">Delete</a>
+                              {% endif %}
+                        {% endfor %}
+                  </div>
+                </div>
+              </div> 
+              {% endif %}
+              {% endfor %}
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+  {% else %}
+  <div class="media content-section">
+    <div class="media-body">
+      <h4> You are not currently enrolled in a challenge: </h4>
+    </div>
+  </div>
+{% endif %}
+    </div>
+
+<!----------------END OF CURRENT CHALLENGE ------------------------------------------------>
+<!----------------END OF CURRENT CHALLENGE ------------------------------------------------>
+<!----------------END OF CURRENT CHALLENGE ------------------------------------------------>
+<!----------------END OF CURRENT CHALLENGE ------------------------------------------------>
+
+
+<!----------------PAST CHALLENGES---------------------------------------------------------->
+<!----------------PAST CHALLENGES---------------------------------------------------------->
+<!----------------PAST CHALLENGES---------------------------------------------------------->
+<!----------------PAST CHALLENGES---------------------------------------------------------->
+<div class="tab-pane fade show" id="pills-past-challenges" role="tabpanel" aria-labelledby="pills-past-challenges-tab">
+{% if past_challenges %}
+<div class="media content-section">
+  <div class="media-body">
+    <h4> Previous Challenges: </h4>
+    {% for challenge in past_challenges %}
+    <hr>
+    <div class='row'>
+      <div class='col-2 m-auto'>
+        <img class="rounded account-img past" src="{{ challenge.cover_image.url }}">
+      </div>
+      <div class='col-10'>
+        <h5>{{ challenge.name }}</h5>
+        {% for pitch in pitch_list %}
+        {% if pitch.challenge.name == challenge.name %}
+          <a class="btn btn-sm btn-outline-info" href="{% url 'challenges:pitch-details' pitch.id %}">My application</a>
+        {% endif %}
+    {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% else %}
+  <div class="media content-section">
+    <div class="media-body">
+      <h4> You dont have any past challenge to review: </h4>
+    </div>
+  </div>
+{% endif %}
+{% endif %}
+</div>
+</div>
+</div>
+{% endblock content %}

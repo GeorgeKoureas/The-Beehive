@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+{% block content %}
+<div class='col-md-8 mx-auto'>
+  <div class="content-section">
+    <div class="media">
+      <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+      <div class="media-body">
+        <h4 class="account-heading">{{ user.username }}</h4>
+        <p class="text-secondary">{{ user.email }}{% if user.is_superuser %}            <b>   (You are logged in as an admin)</b>{% endif %}</p>
+        <ul class="nav nav-pills py-3" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="pills-ongoing-challenges-tab" data-toggle="pill" href="#pills-ongoing-challenges" role="tab" aria-controls="ongoing-challenges" aria-selected="true">Ongoing Challenges</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-pending-challenges-tab" data-toggle="pill" href="#pills-pending-challenges" role="tab" aria-controls="pills-pending-challenges" aria-selected="false">Pending Challenges</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- FORM HERE -->
+  </div>
+
+
+<!-------------------CHALLENGES TO VERIFY--------------------------------------------->
+<!-------------------CHALLENGES TO VERIFY--------------------------------------------->
+<!-------------------CHALLENGES TO VERIFY--------------------------------------------->
+<!-------------------CHALLENGES TO VERIFY--------------------------------------------->
+<!-------------------CHALLENGES TO VERIFY--------------------------------------------->
+
+
+<div class="tab-content pb-5" id="pills-tabContent">
+  <div class="tab-pane fade show" id="pills-pending-challenges" role="tabpanel" aria-labelledby="pills-pending-challenges-tab">
+<div class="media content-section">
+  <div class="media-body">
+  <h4>Challenges to verify and host on platform:</h4>
+  </div>
+</div>
+  <div class="panel-group content-section" id="accordion">
+    {% for challenge in challenge_list %}
+    {% if not challenge.admitted %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <a data-toggle="collapse" class='vol_link' href="#{{ challenge.id }}">
+          {{ challenge.name }}</a>
+        </h5>
+      </div>
+    </div>
+      <div id="{{ challenge.id }}" data-parent="#accordion" class="panel-collapse collapse in media-body">
+        <div class="panel-body">
+          <table id="dt-Challenge-{{ challenge.id }}" class="table table-bordered table-sm" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th class="th-sm">Proposed Small Description</th>
+                <th class="th-sm">Verified Small Description</th>
+                <th class="th-sm">Proposed Large Description</th>
+                <th class="th-sm">Verified Large Description</th>
+                <th class="th-sm">Host Challenge on Platform?</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td>{{ challenge.description_small }}</td>
+                  <form method="POST">{% csrf_token %}<td>
+                    <button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#collapsedescrsm-{{ challenge.id }}" aria-expanded="false" aria-controls="collapsedescrsm-{{ challenge.id }}">
+                      Update!
+                    </button>
+                    </td>
+                  <td>
+                  {{ challenge.description_large }}</td>
+                  <td><button class="btn btn-outline-info" type="button" data-toggle="collapse" data-target="#collapsedescrlg-{{ challenge.id }}" aria-expanded="false" aria-controls="collapsedescrlg-{{ challenge.id }}">
+                    Update!
+                  </button>
+                  </td>
+                  <td><p>{{ challenge_form.admitted }}</p><input type="hidden" name="name" value="{{ challenge.name }}"></input><button class="btn btn-info" name="verify_challenge" type="submit">Host Challenge!</button></td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="collapse" id="collapsedescrsm-{{ challenge.id }}">{{ challenge_form.description_small_final }}</div>
+        <div class="collapse" id="collapsedescrlg-{{ challenge.id }}">{{ challenge_form.description_large_final }}</div>
+        </form>
+      </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  </div>
+
+
+
+
+
+
+
+
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+<!---------------------------ONGOING CHALLENGES------------------------------------------->
+
+<div class="tab-pane fade show active" id="pills-ongoing-challenges" role="tabpanel" aria-labelledby="pills-ongoing-challenges-tab">
+  <div class="media content-section">
+    <div class="media-body">
+  <h4>Ongoing challenges:</h4>
+      </div>
+    </div>
+  <div class="panel-group content-section" id="accordion">
+    {% for challenge in challenge_list %}
+    {% if challenge.admitted %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <a class='vol_link' data-toggle="collapse" href="#{{ challenge.id }}">
+          {{ challenge.name }}</a></h5> Create teams on: <b>{{ challenge.apply_until_date }}</b>
+        
+        <hr>
+      </div>
+      <div id="{{ challenge.id }}" data-parent="#accordion" class="panel-collapse collapse in media-body">
+        <div class="panel-body">
+          <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="pills-{{ challenge.id }}-individuals-tab" data-toggle="pill" href="#pills-{{ challenge.id }}-individuals" role="tab" aria-controls="pills-{{ challenge.id }}-individuals" aria-selected="true">Individuals</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-{{ challenge.id }}-teams-tab" data-toggle="pill" href="#pills-{{ challenge.id }}-teams" role="tab" aria-controls="pills-{{ challenge.id }}-teams" aria-selected="false">Teams</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-{{ challenge.id }}-individuals" role="tabpanel" aria-labelledby="pills-{{ challenge.id }}-individuals-tab">
+              <table id="dt-Individuals-{{ challenge.id }}" class="table table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th class="th-sm">Name</th>
+                    <th class="th-sm">Pitch</th>
+                    <th class="th-sm">Team</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for applicant in challenge.applicants.all %}
+                    <tr>
+                      <td>{{ applicant.username }}</td>
+                      <td>{{ applicant.individual_pitch.first.written_pitch }}</td>
+                      {% if applicant.profile.teams.all %}
+                        <td>{{ applicant.profile.teams.first }}</td>
+                      {% else %}
+                      <td><form method="POST">{% csrf_token %}{{ form|crispy }}<input type="hidden" name="new_member" value="{{ applicant }}"><input type="hidden" name="challenge" value="{{ challenge.name }}"></input><button class="btn btn-outline-info" name="add_team_member" type="submit">Add User</button></form></td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <hr>
+            <script>
+            $(document).ready(function () {
+              $('#dt-Individuals-{{ challenge.id }}').DataTable();
+              $('.dataTables_length').addClass('bs-select');
+            });
+            </script>
+            </div>
+            <div class="tab-pane fade" id="pills-{{ challenge.id }}-teams" role="tabpanel" aria-labelledby="pills-{{ challenge.id }}-teams-tab">
+              <table id="dt-Teams-{{ challenge.id }}" class="table table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th class="th-sm">Team</th>
+                    <th class="th-sm">Members</th>
+                    <th class="th-sm">Final Pitch</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for team in teams_list %}
+                    {% if team.challenge == challenge %}
+                    <tr>
+                      <td>{{ team }}</td>
+                      
+                      <td>
+                        <ul>
+                      {% for member in team.members.all %}
+                        <li>{{ member.user.username }}</li>
+                      {% endfor %}
+                        </ul>
+                      </td>
+                      {% if team.signs.count != team.members.count %}
+                        <td><p>This team hasn't submitted a final pitch yet!</p></td>
+                      {% else %}
+                        <td>{{ team.final_written_pitch }}</td>
+                      {% endif %}
+                    </tr>
+                    {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            <script>
+            $(document).ready(function () {
+              $('#dt-Teams-{{ challenge.id }}').DataTable();
+              $('.dataTables_length').addClass('bs-select');
+            });
+            </script>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

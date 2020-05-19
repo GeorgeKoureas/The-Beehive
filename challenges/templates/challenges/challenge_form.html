@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class='col-md-8 mx-auto'>
+{% if user.profile.challenge_owner_account %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class='border-bottom mb-4'>Do You want to Submit a Challenge? Go Ahead!</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Do you want to solve a challenge for a real company?<a class="ml-2" href="{% url 'register' %}">Create an account now!</a>
+            </small>
+        </div>
+    </div>
+{% else %}
+<div class='media content-section'>
+<h5> Challengers aren't able to submit new Challenges. You must be a Challenge Owner to do this!</h5>
+</div>
+{% endif %}
+</div>
+{% endblock content %}

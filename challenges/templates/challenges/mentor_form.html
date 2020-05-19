@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class='col-md-8 mx-auto'>
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class='border-bottom mb-4'>Do you want to help our teams? Go Ahead!</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Do you want to solve a challenge for a real company?<a class="ml-2" href="{% url 'register' %}">Create an account now!</a>
+            </small>
+            <small class="text-muted">
+                Do you have a problem that needs to be solved?<a class="ml-2" href="{% url 'challenges:challenge-create' %}">Submit it now!</a>
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock content %}

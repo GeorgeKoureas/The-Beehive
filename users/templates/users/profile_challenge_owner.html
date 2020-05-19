@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load tz %}
+
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+{% block content %}
+<div class='col-md-8 mx-auto mt-0 pt-0'>
+    <!---------USER PROFILE CARD ------------------------------------------------>
+    <!---------USER PROFILE CARD ------------------------------------------------>
+    <!---------USER PROFILE CARD ------------------------------------------------>
+    <!---------USER PROFILE CARD ------------------------------------------------>
+    <div class="content-section mt-0">
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+        <div class="media-body">
+          <h4 class="account-heading">{{ user.username }}</h4>
+          <p class="text-secondary">{{ user.email }}</p>
+          <ul class="nav nav-pills py-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="pills-submitted-challenges-tab" data-toggle="pill" href="#pills-submitted-challenges" role="tab" aria-controls="submitted-challenges" aria-selected="true">Submitted challenges</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-stats-tab" data-toggle="pill" href="#pills-stats" role="tab" aria-controls="pills-stats" aria-selected="false">Statistics</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class='col-md-8 mx-auto mt-auto'>
+    <!---------END OF USER PROFILE CARD ------------------------------------------------>
+    <!---------END OF USER PROFILE CARD ------------------------------------------------>
+    <!---------END OF USER PROFILE CARD ------------------------------------------------>
+    <!---------END OF USER PROFILE CARD ------------------------------------------------>
+<div class="tab-content pb-5" id="pills-tabContent">
+<div class="tab-pane fade show active" id="pills-submitted-challenges" role="tabpanel" aria-labelledby="pills-submitted-challenges-tab">
+{% if user.owned_challenges.all %}
+  <div class="media content-section mb-0">
+    <div class="media-body">
+      <h4> Submitted Challenges: </h4>
+    </div>
+  </div>
+  {% for challenge in user.owned_challenges.all %}
+  <div class="media content-section mb-1">
+    <div class="media-body">
+      <div class='row'>
+        <div class='col-2 m-auto'>
+          <img class="rounded account-img past p-0 m-0" src="{{ challenge.cover_image.url }}">
+        </div>
+        <div class='col-10'>
+          <h5>{{ challenge.name }}</h5>
+          <hr>
+          {% if challenge.admitted == True %}
+            <p>This challenge has been succesfully admitted. It is now hosted on the platform</p>
+            <a class="btn btn-sm btn-outline-info mb-3" href="{% url 'challenges:challenge-details' challenge.id %}">Challenge overview</a>
+            <a class="btn btn-sm btn-outline-info mb-3" data-toggle="collapse" href="#MoreChInfo-{{ challenge.id }}" role="button" aria-expanded="false" aria-controls="MoreChInfo-{{ challenge.id }}">More info</a>
+        </div>
+        <div class='row mx-auto'>
+          <div class='col-12 mx-auto'>
+            <div class="collapse mx-auto" id="MoreChInfo-{{ challenge.id }}">
+            <p><b>Number of Applicants: {{ challenge.applicants.all.count }}</b></p>
+          {% endif %}
+          {% if owned_challenge_teams_list %}
+          <!-- <h5 class="text-main">Teams that are now tackling your challenge</h5> -->
+            <table id="dt-Challenge-{{ challenge.id }}" class="table table-striped table-bordered table-sm mx-auto" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th class="th-sm">Team</th>
+                  <th class="th-sm">Members</th>
+                  <th class="th-sm">Final Pitch</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for team in owned_challenge_teams_list %}
+                  {% if team.challenge.name == challenge.name %}
+                  <tr>
+                    <td>{{ team }}</td>
+                    <td>
+                        <ul>
+                          {% for member in team.members.all %}
+                            <li>{{ member.user.username }}</li>
+                          {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                      <a class="btn btn-sm btn-outline-info" href="{% url 'challenges:team-pitch-details' team.id %}" role="button">See their final pitch</a>
+                    </td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>    
+            </table>
+        {% endif %}
+          </div> 
+        </div>
+      </div>
+    </div>
+    <!-- FORM HERE -->
+  </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <h2> You haven't submitted any challenges yet! </h2>
+  {% endif %}
+</div>
+<div class="tab-pane fade show" id="pills-stats" role="tabpanel" aria-labelledby="pills-stats-tab">
+    <div class="media content-section mb-0">
+        <div class="media-body">
+          <h4> Lifetime Stats: (This feature is not implemented yet)</h4>
+        </div>
+    </div>
+    <!-- <div class='row mt-1'>
+        <div class='col-md-6'>
+            <div class="media content-section mb-1">
+                <div class="media-body">
+                    <h3>Challenges</h3>
+                    <h5>Number of challenges submitted:</h5>
+                    <h4>{{ user.owned_challenges.all.count }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-6'>
+            <div class="media content-section mb-1">
+                <div class="media-body">
+                    <h3>Applicants</h3>
+                    <h5>Total number of applicants:</h5>
+                    <h4>{{ user.owned_challenges.all.applicants.count }}</h4>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>
+</div>
+{% endblock %}

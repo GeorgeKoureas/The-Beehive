@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load tz %}
+{% block content %}
+<div class="col-md-12 mx-0 px-0 mt-3">
+  {% if object.admitted %}
+      <div class='row'>
+        <div class="col-md-5 ml-auto">
+          <article class="media content-section cust_grid">
+              <div class="media-body">
+                <div class="row cover_image_cont">
+                  <div class="col-md-12 px-0">
+                    <img class="challenge_cover_det" src="{{ challenge.cover_image.url }}">
+                  </div>
+                </div>
+                <h2 class="article-title">{{ object.name }}</h2>
+                <p class="article-content">{{ object.description_small_final }}</p>
+              </div>
+          </article>
+        </div>
+        <div class='col-md-3 mr-auto'>
+          <div class="media content-section cust_grid">
+            <div class="media-body">
+                <h5>Apply Until:</h5> 
+                <p>{{ object.apply_until_date }}</p>
+                <hr>
+                <h5>Due Date:</h5>
+                <p>{{ object.due_date }}</p>
+                <hr>
+                <h5>Submitted by:</h5>
+                <div class='d-flex'>
+                <img class="rounded-circle account-img past" src="{{ object.assignor.profile.image.url }}">
+                <div>
+                <p class='pb-0 mb-2'>{{ object.assignor }}</p>
+                <a class="btn btn-sm btn-outline-info" href="{{ object.assignor_website }}">Learn more</a>
+                </div>
+                </div>
+
+          <hr>
+          <h5 class="prize"><i class="fas fa-trophy"></i>  Prize:</h5>
+          <b>{{ object.prize }}</b>
+
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class='row'>
+          <div class='col-md-8 ml-auto mr-auto'>
+          <div class="media content-section text-center">
+          <div class="media-body">
+          {% if user == object.assignor %}
+          <h3>This is your challenge</h3>
+          {% elif user.is_authenticated %}
+            {% if not user.profile.challenge_owner_account %}
+              {% if curr_active %}
+                {% if user in object.applicants.all %}
+                  <h3>You have already Applied</h3>
+                  {% if pitch_list %}
+                    {% if teams_list %}
+                    <p>You can't update your individual application right now, since you are already in a team!</p>
+                            <p class="text-main">Your team has these members:</p>
+                            {% for member in teams_list.first.members.all %}
+                            <p class="text-secondary">{{ member.user.username }} Contact: {{ member.user.email }}</p>
+                            {% endfor %}
+                        <a class="btn btn-outline-info" href="{% url 'challenges:team-pitch' teams_list.first.id %}" role="button">Submit your final team pitch</a>
+                        <a class="btn btn-outline-danger" href="{% url 'challenges:pitch-delete' pitch_list.first.id %}" role="button">Leave the team and delete your Application</a>
+                    {% else %}
+                      <a class="btn btn-outline-info" href="{% url 'challenges:pitch-update' pitch_list.first.id %}" role="button">Update Your Application</a>
+                      <a class="btn btn-outline-danger" href="{% url 'challenges:pitch-delete' pitch_list.first.id %}" role="button">Delete Your Application</a>
+                    {% endif %}
+                  {% endif %}
+                {% else %}
+                  {% if active %}
+                    <h3>You can only have one active Challenge per time</h3>
+                  {% else %}
+                    <button class="btn btn-block cust_btn" type="button" data-toggle="collapse" data-target="#collapsedfrm-{{ challenge.id }}" aria-expanded="false" aria-controls="collapsedfrm-{{ challenge.id }}">
+                      Apply Now!
+                    </button>
+                    <div class="collapse mt-3" id="collapsedfrm-{{ challenge.id }}">
+                      <form method="POST">
+                        {% csrf_token %}
+                      <fieldset class="form-group">
+                        <legend class='border-bottom mb-4'>Apply Now!</legend>
+                          {{ form|crispy }}
+                      </fieldset>
+                      <div class="form-group">
+                        <a class="btn btn-outline-info" data-toggle="modal" data-target="#ApplyModalCenter">Submit Application</a>
+                      </div>
+
+<!--------------------------------------SUBMIT APPLICATION MODAL----------------------------------------->
+<!--------------------------------------SUBMIT APPLICATION MODAL----------------------------------------->
+<!--------------------------------------SUBMIT APPLICATION MODAL----------------------------------------->
+
+
+<div class="modal fade" id="ApplyModalCenter" tabindex="-1" role="dialog" aria-labelledby="ApplyModalCenterButton" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Submit Application?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-left">
+        <p>Submitting your application will forbid you from entering another challenge while this one is active and you are working on your solution.</p>
+        <p>You will be able to review your progress in your profile and preview the next steps.</p> <b>Do you wish to procceed?</b>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button class="btn cust_btn" type="submit">Yes, submit my application!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-------------------------END OF SUBMIT APPLICATION MODAL-------------------------------------------------------------->
+<!-------------------------END OF SUBMIT APPLICATION MODAL-------------------------------------------------------------->
+<!-------------------------END OF SUBMIT APPLICATION MODAL-------------------------------------------------------------->
+</form>
+
+</div>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                {% if user in object.applicants.all %}
+                  <a class="btn btn-outline-info" href="{% url 'challenges:pitch-details' pitch_list.first.id %}" role="button">Review Your Application</a>
+                {% else %}
+                  <h2>Applications for this challenge have closed</h2>
+                {% endif %}
+              {% endif %}
+            {% else %}
+            <h2> Challenge owners can't apply to other challenges!! </h2>
+            {% endif %}
+          {% else %}
+            <h3>You need an account in order to apply!</h3>
+            <a class="btn btn-outline-info mr-2 ml-2" href="{% url 'register' %}?next={{ request.path }}" role="button">Signup</a>
+            <a class="btn btn-outline-info" href="{% url 'login' %}?next={{ request.path }}" role="button">Login</a>
+          {% endif %}  
+    </div>
+  </div>
+  </div>
+</div>
+  <div class="col-md-12 mt-3 bg-white px-0 mx-0 border-top">
+    <div class="col-md-8 ml-auto mr-auto mt-2">
+          <ul class="nav nav-pills py-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="pills-{{ object.id }}-Overview-tab" data-toggle="pill" href="#pills-{{ object.id }}-Overview" role="tab" aria-controls="pills-{{ object.id }}-individuals" aria-selected="true">Overview</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-{{ object.id }}-Timeline-tab" data-toggle="pill" href="#pills-{{ object.id }}-Timeline" role="tab" aria-controls="pills-{{ object.id }}-teams" aria-selected="false">Timeline</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-{{ object.id }}-Deliverables-tab" data-toggle="pill" href="#pills-{{ object.id }}-Deliverables" role="tab" aria-controls="pills-{{ object.id }}-Deliverables" aria-selected="false">Deliverables</a>
+            </li>
+          </ul>
+          <hr>
+          <div class="tab-content pb-5" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-{{ object.id }}-Overview" role="tabpanel" aria-labelledby="pills-{{ object.id }}-Overview-tab">
+              <h3>Overview</h3>
+              <p class="article-content">{{ object.description_large_final }}</p>
+            </div>
+            <div class="tab-pane fade show" id="pills-{{ object.id }}-Timeline" role="tabpanel" aria-labelledby="pills-{{ object.id }}-Timeline-tab">
+              <h3>Timeline</h3>
+              <div class="row">
+                <div class="col-lg-7 mx-auto">
+                    <!-- Timeline -->
+                    <ul class="timeline">
+                        <li class="timeline-item bg-white rounded border ml-3 p-4 shadow">
+                            <div class="timeline-arrow"></div>
+                            <h2 class="h5 mb-0">Applications Close:</h2><span class="small text-gray">{{ object.apply_until_date }}</span>
+                            <p class="text-small mt-2 font-weight-light">A small initial idea regarding the solution is needed. We will use the submitted info to pair you in teams.</p>
+                        </li>
+                        <li class="timeline-item bg-white rounded border ml-3 p-4 shadow">
+                          <div class="timeline-arrow"></div>
+                          <h2 class="h5 mb-0">Team Creation:</h2><span class="small text-gray">{{ object.apply_until_date }}</span>
+                          <p class="text-small mt-2 font-weight-light">Teams of (up to) 3 are matched by the Mindspace team, based on information provided during your applications. We will provide each individual with the contact details of his/her team members</p>
+                      </li>
+                    </ul>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade show" id="pills-{{ object.id }}-Deliverables" role="tabpanel" aria-labelledby="pills-{{ object.id }}-Deliverables-tab">
+              <h3>Deliverables</h3>
+              <p class="article-content"></p>
+            </div>
+          </div>
+          </div>
+    </div>
+  {% endif %}
+</div>         
+
+
+{% endblock content %}

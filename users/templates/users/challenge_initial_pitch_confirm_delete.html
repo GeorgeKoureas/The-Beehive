@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='col-md-8 mx-auto'>
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class='border-bottom mb-4'>Delete Your Pitch for {{ object.challenge }}</legend>
+                <p>Deleting your application will allow you to take part in other challenges but will automatically disqualify you from {{ object.challenge }}</p>
+                <h5>Your individual application is the following:</h5>
+                <b>{{ object.written_pitch }}</b>
+                <hr>
+                <p> Are you sure you want to delete it? </p>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">Delete</button>
+                <a class="btn btn-outline-secondary" href="{% url 'challenges:challenge-details' object.challenge.pk %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

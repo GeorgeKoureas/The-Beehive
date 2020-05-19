@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='col-md-8 mx-auto'>
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">Submitted By: {{ object.members.all.first.user }}</a>
+        <!-- <small class="text-muted">Due Date: {{ object.due_date }}</small> -->
+      </div>
+      <!-- <div class="row cover_image_cont">
+        <div class="col-md-12 px-0">
+          <img class="challenge_cover" src="{{ object.challenge.cover_image.url }}">
+        </div>
+      </div> -->
+      <h5 class="article-title">Final Pitch for {{ object.challenge.name }}</h5>
+      <p class="article-content">{{ object.final_written_pitch }}</p>
+    </div>
+  </article>
+</div>
+{% endblock %}
