@@ -17,7 +17,7 @@ class Challenge(models.Model):
     description_large = models.TextField()
     description_large_final = models.TextField(blank=True)
     assignor_website = models.URLField()
-    due_date = models.DateTimeField()
+    due_date = models.DateTimeField(null=True, blank=True)
     apply_until_date = models.DateTimeField(null=True, blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     applicants = models.ManyToManyField(User, blank=True, related_name='challenges')

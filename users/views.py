@@ -89,13 +89,13 @@ def profile(request):
     
     
     if request.user.profile.challenge_owner_account:
-        return render(request, 'users/profile_challenge_owner.html', {'pitch_list': Challenge_Initial_Pitch.objects.filter(user=request.user), 'teams_list': Team.objects.filter(members=request.user.profile), 'owned_challenge_teams_list': Team.objects.filter(challenge__in=request.user.owned_challenges.all()), 'title': "Profile", 'active_challenge': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=datetime.now()))), 'past_challenges': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__lte=datetime.now()))) })
+        return render(request, 'users/profile_challenge_owner.html', {'pitch_list': Challenge_Initial_Pitch.objects.filter(user=request.user), 'teams_list': Team.objects.filter(members=request.user.profile), 'owned_challenge_teams_list': Team.objects.filter(challenge__in=request.user.owned_challenges.all()), 'title': "Profile", 'active_challenge': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=timezone.now()))), 'past_challenges': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__lte=timezone.now()))) })
 
 
-    act_challenge = Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=datetime.now()))).first()
+    act_challenge = Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=timezone.now()))).first()
 
 
-    return render(request, 'users/profile.html', {'pitch_list': Challenge_Initial_Pitch.objects.filter(user=request.user), 'teams_list': Team.objects.filter(members=request.user.profile), 'title': "Profile", 'active_challenge': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=datetime.now()))), 'past_challenges': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__lte=datetime.now()))), 'active_team': Team.objects.filter(Q(challenge = act_challenge) & Q(members=request.user.profile)) })
+    return render(request, 'users/profile.html', {'pitch_list': Challenge_Initial_Pitch.objects.filter(user=request.user), 'teams_list': Team.objects.filter(members=request.user.profile), 'title': "Profile", 'active_challenge': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__gte=timezone.now()))), 'past_challenges': Challenge.objects.filter((Q(applicants = request.user) & Q(due_date__lte=timezone.now()))), 'active_team': Team.objects.filter(Q(challenge = act_challenge) & Q(members=request.user.profile)) })
 
 
 
