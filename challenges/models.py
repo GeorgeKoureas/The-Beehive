@@ -10,6 +10,22 @@ from django.apps import apps
 
 
 class Challenge(models.Model):
+    SOFTWARE = 'SW'
+    DESIGN = 'DE'
+    HARDWARE = 'HW'
+    SCIENCE = 'SC'
+    MARKETING = 'MA'
+    OTHER = 'OT'
+
+    CATEGORY_CHOICES = [
+        (SOFTWARE, 'Programming'),
+        (DESIGN, 'Design'),
+        (HARDWARE, 'Hardware'),
+        (SCIENCE, 'Science'),
+        (MARKETING, 'Marketing'),
+        (OTHER, 'Other'),
+    ]
+
     name = models.CharField(max_length=30)
     assignor = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='owned_challenges')
     description_small = models.TextField()
@@ -26,9 +42,15 @@ class Challenge(models.Model):
     contact_person_email = models.EmailField(null=True)
     cover_image = models.ImageField(default='default_challenge.jpg', upload_to='challenge_pics')
     prize = models.CharField(max_length=50)
+    category = models.CharField(max_length=2, choices=CATEGORY_CHOICES, default=OTHER)
 
     def __str__(self):
         return self.name
+
+    @property
+    def remaining_days(self):
+        today = timezone.now()
+        return self.apply_until_date.date() - today.date()
     
 
 

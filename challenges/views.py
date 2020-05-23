@@ -22,6 +22,12 @@ class ChallengeListView(ListView):
     paginate_by = 6
 
 
+    # def get_context_data(self, **kwargs):
+    #     context = super(ChallengeListView, self).get_context_data(**kwargs)
+    #     context['curr_date'] = timezone.now()
+    #     return context
+
+
 
 class ChallengeDetailsView(FormMixin, DetailView):
     model = Challenge
@@ -32,16 +38,25 @@ class ChallengeDetailsView(FormMixin, DetailView):
         return reverse('challenges:challenge-details', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
-         context = super(ChallengeDetailsView, self).get_context_data(**kwargs)
-         context['form'] = Challenge_Initial_Pitch_Form()
-         self.object = self.get_object()
-         context['title'] = self.object.name
-         if self.request.user.is_authenticated:
+        context = super(ChallengeDetailsView, self).get_context_data(**kwargs)
+        context['form'] = Challenge_Initial_Pitch_Form()
+        self.object = self.get_object()
+        context['title'] = self.object.name
+        if self.request.user.is_authenticated:
             now = timezone.now()
             if (self.object.due_date.date() > now.date()):
                 context['curr_active']=True
             else:
                 context['curr_active']=False
+        
+
+
+
+            if (self.object.apply_until_date.date() > now.date()):
+                context['applications_open']=True
+            else:
+                context['applications_open']=False
+        
 
 
             if self.request.user.challenges.all():
@@ -56,7 +71,7 @@ class ChallengeDetailsView(FormMixin, DetailView):
             context['pitch_list'] = Challenge_Initial_Pitch.objects.filter(Q(challenge=self.object) & Q(user=self.request.user))
             context['teams_list'] = Team.objects.filter(Q(members=self.request.user.profile) & Q(challenge=self.object))
             context['owned_challenge_teams_list'] = Team.objects.filter(Q(challenge=self.object))
-         return context
+        return context
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -151,14 +166,17 @@ class PitchDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMix
         self.object = self.get_object()
         self.object.challenge.applicants.remove(self.request.user)
         if self.object.user.profile.teams.filter(challenge = self.object.challenge).first():
+            temp_id = self.object.user.profile.teams.filter(challenge = self.object.challenge).first().id
             self.object.user.profile.teams.filter(challenge = self.object.challenge).first().members.remove(self.request.user.profile)
+            if self.object.challenge.challenge_teams.filter(id = temp_id).first().members.count() == 0:
+                self.object.challenge.challenge_teams.filter(id = temp_id).first().delete()
         return super(PitchDeleteView, self).delete(*args, **kwargs)
 
 
 
 class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Challenge
-    fields = ['name', 'description_small', 'description_large', 'assignor_website', 'due_date', 'contact_person_full_name', 'contact_person_email']
+    fields = ['name', 'description_small', 'description_large', 'assignor_website', 'due_date', 'category', 'contact_person_full_name', 'contact_person_email']
     success_message = "%(name)s was submitted successfully!"
 
     def get_context_data(self, **kwargs):

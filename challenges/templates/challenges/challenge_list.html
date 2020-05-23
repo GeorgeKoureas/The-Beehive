@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="col-md-10 ml-auto mr-auto">
+  <a name="explore"></a> 
   <h4>Explore Our Challenges</h4>
 <div class='row mt-3'>
     {% for challenge in object_list %}
@@ -10,7 +11,12 @@
             <div class="media-body">
               <div class="article-metadata">
                 <img class="rounded-circle prof_btn_img" src="{{ challenge.assignor.profile.image.url }}"><small class="text-muted">Submitted By: {{ challenge.assignor }}</small>
-                <p class="text-main">Due Date: {{ challenge.due_date }}</p>
+                <p class="text-main my-0 py-0">Due Date: {{ challenge.due_date }}</p>
+                {% if challenge.remaining_days.days > 0 %}
+                    <b class='my-0 py-0'>{{ challenge.remaining_days.days }} Days left to apply</b>
+                {% else %}
+                    <b class='my-0 py-0'>Applications have closed</b>
+                {% endif %}
               </div>
               <div class="row cover_image_cont mb-3">
                 <div class="col-md-12 px-0">
@@ -29,7 +35,12 @@
               <div class="media-body">
                 <div class="article-metadata">
                   <small class="text-muted"><img class="rounded-circle prof_btn_img" src="{{ challenge.assignor.profile.image.url }}">Submitted By: {{ challenge.assignor }}</small>
-                  <p class="text-main">Due Date: {{ challenge.due_date }}</p>
+                  <p class="text-main my-0 py-0">Due Date: {{ challenge.due_date }}</p>
+                  {% if challenge.remaining_days.days > 0 %}
+                    <b class='my-0 py-0'>{{ challenge.remaining_days.days }} Days left to apply</b>
+                  {% else %}
+                    <b class='my-0 py-0'>Applications have closed</b>
+                  {% endif %}
                 </div>
                 <div class="row cover_image_cont mb-3">
                   <div class="col-md-12 px-0">
@@ -39,6 +50,7 @@
                 <div>
                 <h5><a class="article-title" href="{% url 'challenges:challenge-details' challenge.id %}">{{ challenge.name }}</a></h5>
                 <p class="article-content">{{ challenge.description_small_final|truncatewords_html:19 }}</p>
+                <p></p>
                 </div>
               </div>
             </article>
@@ -52,22 +64,21 @@
     {% if is_paginated %}
     <div class='text-center'>
     {% if page_obj.has_previous %}
-      <a class='btn btn-outline-info my-2' href='?page=1'>First</a>
-      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.previous_page_number }}'>Previous</a>
+      <a class='btn btn-outline-info my-2' href='?page=1#explore'>First</a>
+      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.previous_page_number }}#explore'>Previous</a>
     {% endif %}
 
 
     {% for num in page_obj.paginator.page_range %}
       {% if page_obj.number == num %}
-      <a class='btn cust_btn my-2' href='?page={{ num }}'>{{ num }}</a>
+      <a class='btn cust_btn my-2' href='?page={{ num }}#explore'>{{ num }}</a>
       {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a class='btn btn-outline-info my-2' href='?page={{ num }}'>{{ num }}</a>
+      <a class='btn btn-outline-info my-2' href='?page={{ num }}#explore'>{{ num }}</a>
       {% endif %}
     {% endfor %}
-
     {% if page_obj.has_next %}
-      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.next_page_number }}'>Next</a>
-      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.paginator.num_pages }}'>Last</a>
+      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.next_page_number }}#explore'>Next</a>
+      <a class='btn btn-outline-info my-2' href='?page={{ page_obj.paginator.num_pages }}#explore'>Last</a>
     {% endif %}
   </div>
     {% endif %}

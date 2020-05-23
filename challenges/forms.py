@@ -6,7 +6,7 @@ from .models import Challenge
 class Challenge__Form(ModelForm):
     class Meta:
         model = Challenge
-        fields = ['name', 'assignor', 'description_small', 'description_large', 'assignor_website', 'due_date']
+        fields = ['name', 'assignor', 'description_small', 'description_large', 'assignor_website', 'due_date', 'category']
     
 
 
