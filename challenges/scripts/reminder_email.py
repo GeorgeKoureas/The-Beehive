@@ -1,12 +1,14 @@
 import os
 from datetime import date
-from datutil.relativedelta import relativedelta
-from django.mail import send_mail
-from .models import Challenge
+from dateutil.relativedelta import relativedelta
+from django.core.mail import send_mail
+from challenges.models import Challenge
 
 
 def run():
+    print('yey')
     for challenge in Challenge.objects.filter(apply_until_date=date.today() + relativedelta(days=5)):
+        print('AWESOME')
         for applicant in challenge.applicants.all():
             print(applicant.email)
             send_mail(
@@ -16,4 +18,3 @@ def run():
                 [applicant.email],
                 fail_silently=False,
                 )
-            os.sytem("pause")
