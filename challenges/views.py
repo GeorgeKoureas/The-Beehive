@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.views.generic.edit import FormMixin
 from .models import Challenge, Mentor
-from users.models import Challenge_Initial_Pitch, Team
+from users.models import Challenge_Initial_Pitch, Team, Notifications
 from users.forms import Challenge_Initial_Pitch_Form, FinalPitchForm
 from django.db.models import Q
 from django.utils import timezone
@@ -245,3 +245,6 @@ class MentorCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('challenges:challenge-home')
+
+
+

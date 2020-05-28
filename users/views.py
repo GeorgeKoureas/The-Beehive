@@ -5,7 +5,7 @@ from .forms import UserRegisterForm, ProfileRegisterForm, TeamCreateForm, Change
 from challenges.forms import Challenge_Verify_Form
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
-from .models import Challenge_Initial_Pitch, Team, Profile
+from .models import Challenge_Initial_Pitch, Team, Profile, Notifications
 from challenges.models import Challenge
 from django.db.models import Q
 from django.views.generic import CreateView
@@ -74,12 +74,16 @@ def profile(request):
                         new_team = Team.objects.create(challenge=Challenge.objects.filter(name=challenge).first())
                         new_team.members.add(User.objects.filter(username=member).first().profile)
                         new_team.save()
+                        notification = Notifications.objects.create(recipient=User.objects.filter(username=member).first(), message=f'You now have teammates to help you tackle "{challenge}"! Find more about them on your profile!')
+                        notification.save()
                         form = TeamCreateForm()
                     else:
                         new_team = Team.objects.filter(pk=ch).first()
                         if new_team.members.count() < 3:
                             new_team.members.add(User.objects.filter(username=member).first().profile)
                             new_team.save()
+                            notification = Notifications.objects.create(recipient=User.objects.filter(username=member).first(), message=f'You now have teammates to help you tackle "{challenge}"! Find more about them on your profile!')
+                            notification.save()
                             form = TeamCreateForm()
                         else:
                             messages.warning(request, f'Team has 3 members already')

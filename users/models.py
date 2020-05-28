@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from challenges.models import Challenge
 # Create your models here.
@@ -42,3 +44,10 @@ class Challenge_Initial_Pitch(models.Model):
     def __str__(self):
         return f'"{self.user.username}" pitch for "{self.challenge.name}" challenge'
 
+
+
+class Notifications(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=200)
+    timestamp = models.DateTimeField(default=timezone.now)
+    read = models.BooleanField(default=False)
